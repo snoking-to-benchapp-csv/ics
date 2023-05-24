@@ -1,0 +1,17 @@
+{
+  "name": "snoking-to-benchapp-ics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx ts-node  --files index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "ics": "^3.1.0",
+    "jssoup": "^0.0.15",
+    "ts-node": "^10.9.1"
+  }
+}
