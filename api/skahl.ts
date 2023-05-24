@@ -66,11 +66,9 @@ export class SKAHLInfo {
 
             const start = event.dateTime.split(/(?:-|T|:)/).splice(0,5) as any;
             return {
-                title: `${event.teamAwayName} vs ${event.teamHomeName}`,
+                title: `"'${event.teamAwayName}' vs '${event.teamHomeName}'"`,
                 start: start,
                 duration: { hours: 1, minutes: 0 },
-                
-
             }
         }))
         return value || '';
