@@ -88,7 +88,7 @@ class SnokingGame {
         const location1 = this.isHome() ? this.event.rinkName + " - Home" : this.event.rinkName + " - Away";
         const location2 = RINK_NAME_TO_ADDRESS[this.event.rinkName] || undefined;
         return {
-            title: `${this.event.teamAwayName} vs ${this.event.teamHomeName}`,
+            title: `${this.event.teamHomeName} vs ${this.event.teamAwayName}`,
             start: start,
             duration: { hours: 1, minutes: 0 },
             location: location1 + "\n" + location2,
