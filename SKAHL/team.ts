@@ -1,4 +1,4 @@
-import { EventAttributes, createEvents } from "ics";
+import { DateArray, EventAttributes, createEvents } from "ics";
 import { get } from "../interfaces/network";
 import { SnokingGameResponse, SnokingSeasonResponse } from "../typings/snokingData";
 import { SKAHLSeason } from "./seasons";
@@ -85,9 +85,16 @@ class SnokingGame {
     }
 
     getICSEventInfo(): EventAttributes {        
-        const start = moment.tz(this.event.dateTime, 'America/Los_Angeles').utc().toArray().splice(0,5) as any;
+        const startTime = moment.tz(this.event.dateTime, 'America/Los_Angeles').utc();
+        const start = [ startTime.get('year'), startTime.get('month')+1, startTime.get('date'), startTime.get('hour'), startTime.get('minute') ] as DateArray;
+
         const location1 = this.isHome() ? this.event.rinkName + " - Home" : this.event.rinkName + " - Away";
         const location2 = RINK_NAME_TO_ADDRESS[this.event.rinkName] || undefined;
+        const orig = this.event.dateTime;
+        console.log({
+            start, orig
+        });
+
         return {
             title: `${this.event.teamHomeName} vs ${this.event.teamAwayName}`,
             start,
