@@ -85,7 +85,7 @@ class SnokingGame {
     }
 
     getICSEventInfo(): EventAttributes {        
-        const start = moment.tz(this.event.dateTime, 'America/Los_Angeles').toArray().splice(0,5) as any;
+        const start = moment.tz(this.event.dateTime, 'America/Los_Angeles').utc().toArray().splice(0,5) as any;
         const location1 = this.isHome() ? this.event.rinkName + " - Home" : this.event.rinkName + " - Away";
         const location2 = RINK_NAME_TO_ADDRESS[this.event.rinkName] || undefined;
         return {
