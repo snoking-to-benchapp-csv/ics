@@ -3,6 +3,7 @@ import { get } from "../interfaces/network";
 import { SnokingGameResponse, SnokingSeasonResponse } from "../typings/snokingData";
 import { SKAHLSeason } from "./seasons";
 import * as fs from 'fs';
+import moment from 'moment-timezone';
 
 const RINK_NAME_TO_ADDRESS: { [id: string]: string | null } = {
     Renton: "12620 164th Ave SE, Renton, WA 98059",
@@ -83,13 +84,14 @@ class SnokingGame {
         return this.team.teamId == `${this.event.teamHomeSeasonId}`;
     }
 
-    getICSEventInfo(): EventAttributes {
-        const start = this.event.dateTime.split(/(?:-|T|:)/).splice(0,5).map(i => parseInt(i, 10)) as any;
+    getICSEventInfo(): EventAttributes {        
+        const start = moment.tz(this.event.dateTime, 'America/Los_Angeles').toArray().splice(0,5) as any;
         const location1 = this.isHome() ? this.event.rinkName + " - Home" : this.event.rinkName + " - Away";
         const location2 = RINK_NAME_TO_ADDRESS[this.event.rinkName] || undefined;
         return {
             title: `${this.event.teamHomeName} vs ${this.event.teamAwayName}`,
-            start: start,
+            start,
+            startInputType: 'utc',
             duration: { hours: 1, minutes: 0 },
             location: location1 + "\n" + location2,
             description: this.isHome() ? "Light Jerseys" : "Dark Jerseys",
