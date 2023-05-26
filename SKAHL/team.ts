@@ -96,7 +96,7 @@ class SnokingGame {
         });
 
         return {
-            title: `${this.event.teamHomeName} vs ${this.event.teamAwayName}`,
+            title: `"${this.event.teamHomeName}" vs "${this.event.teamAwayName}"`,
             start,
             startInputType: 'utc',
             duration: { hours: 1, minutes: 0 },
