@@ -54,7 +54,7 @@ export class SKAHLTeamInSeason {
 
     async writeICS(): Promise<void> {
         const ics = await this.getICS();
-        const seasonLocation = path.resolve(__dirname, `/../..//output/${this.season.name}/`);
+        const seasonLocation = path.join(__dirname, `/../..//output/${this.season.name}/`);
         if (!fs.existsSync(seasonLocation)) {
             fs.mkdirSync(seasonLocation);
         }
