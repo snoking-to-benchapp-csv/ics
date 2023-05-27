@@ -1,5 +1,5 @@
 import { getCurrentSeasons } from "./SKAHL/seasons";
-import { SKAHLInfo } from "./api/skahl";
+
 import * as fs from 'fs';
 
 const main = async () => {
