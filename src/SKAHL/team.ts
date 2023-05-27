@@ -104,7 +104,7 @@ class SnokingGame {
             start,
             startInputType: 'utc',
             duration: { hours: 1, minutes: 0 },
-            location: `${location1}'\n'${location2}`,
+            location: `${location1}\n${location2}`,
             description: this.isHome() ? 'Light Jerseys' : 'Dark Jerseys',
         };
     }
