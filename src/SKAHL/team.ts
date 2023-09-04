@@ -23,6 +23,69 @@ const RINK_NAME_TO_ADDRESS: Record<string, string | null> = {
     'Angel of the Winds Arena': '2000 Hewitt Ave, Everett, WA 98201',
 };
 
+export class SKHALTeamForMultipleSeasons {
+    teamInSeason: SKAHLTeamInSeason[] = [];
+    name: string;
+    teamId: string;
+
+    constructor(name: string, teamId: string) {
+        this.name = name;
+        this.teamId = teamId;
+    }
+
+    public addSeason(season: SKAHLTeamInSeason): void {
+        this.teamInSeason.push(season);
+    }
+
+    toString(): string {
+        let ans = `TEAM: ${this.name}\n`;
+        this.teamInSeason.forEach((s) => {
+            ans += `\t${s.season.name} (${s.season.id})\n`;
+        });
+        return ans;
+    }
+
+    public async getGames(): Promise<SnokingGame[]> {
+        const games = await Promise.all(this.teamInSeason.map((x) => x.getGames()));
+        return games.flat().sort((a, b) => a.event.dateTime.localeCompare(b.event.dateTime));
+    }
+
+    public async getFutureGames(): Promise<SnokingGame[]> {
+        return (await this.getGames()).filter((g) => {
+            return (
+                moment(g.event.dateTime) > moment().subtract(2, 'days')
+            ); /* only games in the future with some fudge*/
+        });
+    }
+
+    async getICS(futureOnly: boolean = true): Promise<string> {
+        const games = await (futureOnly ? this.getFutureGames() : this.getGames());
+        const { error, value } = createEvents(games.map((g) => g.getICSEventInfo()));
+        if (value !== null && value !== undefined) {
+            return value;
+        } else {
+            console.log({ error });
+            throw error ?? new Error('Issue creating ICS');
+        }
+    }
+
+    getFileDir(): string {
+        return path.join(__dirname, `/../..//output/`);
+    }
+
+    getFileName(): string {
+        return this.getFileDir() + `${this.name}.ics`;
+    }
+
+    async writeICS(futureOnly: boolean = true): Promise<void> {
+        const ics = await this.getICS(futureOnly);
+        if (!fs.existsSync(this.getFileDir())) {
+            fs.mkdirSync(this.getFileDir());
+        }
+        fs.writeFileSync(this.getFileName(), ics);
+    }
+}
+
 export class SKAHLTeamInSeason {
     season: SKAHLSeason;
     name: string;
@@ -40,25 +103,6 @@ export class SKAHLTeamInSeason {
 
     async getGames(): Promise<SnokingGame[]> {
         return (await this.getServerInfo()).map((g) => new SnokingGame(g, this));
-    }
-
-    async getICS(): Promise<string> {
-        const { error, value } = createEvents((await this.getGames()).map((g) => g.getICSEventInfo()));
-        if (value !== null && value !== undefined) {
-            return value;
-        } else {
-            console.log({ error });
-            throw error ?? new Error('Issue creating ICS');
-        }
-    }
-
-    async writeICS(): Promise<void> {
-        const ics = await this.getICS();
-        const seasonLocation = path.join(__dirname, `/../..//output/${this.season.name}/`);
-        if (!fs.existsSync(seasonLocation)) {
-            fs.mkdirSync(seasonLocation);
-        }
-        fs.writeFileSync(seasonLocation + `${this.name}.ics`, ics);
     }
 
     private async getServerInfo(): Promise<SnokingSeasonResponse> {
@@ -104,7 +148,7 @@ class SnokingGame {
             start,
             startInputType: 'utc',
             duration: { hours: 1, minutes: 0 },
-            location: `${location1}\n${location2}`,
+            location: `(${location1}) ${location2}`,
             description: this.isHome() ? 'Light Jerseys' : 'Dark Jerseys',
         };
     }
