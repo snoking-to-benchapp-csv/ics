@@ -1,7 +1,7 @@
 import { get } from '../interfaces/network';
 import { SKAHLTeamInSeason } from './team';
 
-interface ServerTeamInfo {
+type ServerTeamInfo = {
     name: string;
     divisionName: string;
     teamId: string;

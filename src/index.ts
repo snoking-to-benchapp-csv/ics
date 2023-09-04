@@ -16,7 +16,7 @@ async function main(): Promise<void> {
 
     teams = teams.filter((t) => t.name.includes('Frost Giants'));
 
-    let teamSeasonsByTeam = _.groupBy(teams, (t) => t.name);
+    const teamSeasonsByTeam = _.groupBy(teams, (t) => t.name);
     const allTeams: SKHALTeamForMultipleSeasons[] = [];
     Object.entries(teamSeasonsByTeam).forEach(([teamName, config]) => {
         const team = new SKHALTeamForMultipleSeasons(teamName, config[0].teamId);

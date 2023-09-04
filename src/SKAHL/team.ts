@@ -58,7 +58,7 @@ export class SKHALTeamForMultipleSeasons {
         });
     }
 
-    async getICS(futureOnly: boolean = true): Promise<string> {
+    async getICS(futureOnly = true): Promise<string> {
         const games = await (futureOnly ? this.getFutureGames() : this.getGames());
         const { error, value } = createEvents(games.map((g) => g.getICSEventInfo()));
         if (value !== null && value !== undefined) {
@@ -77,7 +77,7 @@ export class SKHALTeamForMultipleSeasons {
         return this.getFileDir() + `${this.name}.ics`;
     }
 
-    async writeICS(futureOnly: boolean = true): Promise<void> {
+    async writeICS(futureOnly = true): Promise<void> {
         const ics = await this.getICS(futureOnly);
         if (!fs.existsSync(this.getFileDir())) {
             fs.mkdirSync(this.getFileDir());
