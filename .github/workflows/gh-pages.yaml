@@ -16,10 +16,10 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v1
               with:
-                  node-version: "19.x"
-            - run: npm ci
-            - run: npm run lint
-            - run: npm start
+                  node-version: "20.x"
+            - run: yarn install --frozen-lockfile
+            - run: yarn lint
+            - run: yarn start
 
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
