@@ -3,6 +3,7 @@ import { getCurrentSeasons } from './SKAHL/seasons';
 
 import * as fs from 'fs';
 import { SKHALTeamForMultipleSeasons } from './SKAHL/team';
+import { createInformationPage } from './page/renderPage';
 
 async function main(): Promise<void> {
     // Get all team data across all current seasons (I.E. seasons with the current calendar year in the title)
@@ -24,7 +25,8 @@ async function main(): Promise<void> {
         allTeams.push(team);
     });
 
-    Promise.all(allTeams.map((x) => x.writeICS()));
+    await Promise.all(allTeams.map((x) => x.writeICS()));
+    createInformationPage(allTeams);
 }
 
 if (fs.existsSync('output')) {
