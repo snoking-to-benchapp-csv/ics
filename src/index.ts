@@ -15,7 +15,8 @@ async function main(): Promise<void> {
     // This makes sure that we're only processing teams that agree to be living based on hackey-side project code
     // (I.E just my team right now lol)
 
-    teams = teams.filter((t) => t.name.includes('Frost Giants'));
+    const ALLOWLIST_TEAMS = ['Frost Giants', 'Frost Mites'];
+    teams = teams.filter((t) => ALLOWLIST_TEAMS.find((l) => t.name.includes(l)));
 
     const teamSeasonsByTeam = _.groupBy(teams, (t) => t.name);
     const allTeams: SKHALTeamForMultipleSeasons[] = [];
@@ -25,7 +26,12 @@ async function main(): Promise<void> {
         allTeams.push(team);
     });
 
-    await Promise.all(allTeams.map((x) => x.writeICS()));
+    await Promise.all(
+        allTeams.map((x) => {
+            console.log('Writing ' + x.toString());
+            return x.writeICS();
+        }),
+    );
     createInformationPage(allTeams);
 }
 

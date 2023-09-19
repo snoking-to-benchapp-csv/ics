@@ -1,7 +1,7 @@
 import { type DateArray, type EventAttributes, createEvents } from 'ics';
 import { get } from '../interfaces/network';
 import { type SnokingGameResponse, type SnokingSeasonResponse } from '../typings/snokingData';
-import { type SKAHLSeason } from './seasons';
+import { SeasonType, type SKAHLSeason } from './seasons';
 import * as fs from 'fs';
 import * as path from 'path';
 import moment from 'moment-timezone';
@@ -64,7 +64,6 @@ export class SKHALTeamForMultipleSeasons {
         if (value !== null && value !== undefined) {
             return value;
         } else {
-            console.log({ error });
             throw error ?? new Error('Issue creating ICS');
         }
     }
@@ -106,9 +105,11 @@ export class SKAHLTeamInSeason {
     }
 
     private async getServerInfo(): Promise<SnokingSeasonResponse> {
-        return (await get(
-            `https://snokinghockeyleague.com/api/game/list/${this.season.id}/0/${this.teamId}`,
-        )) as SnokingSeasonResponse;
+        const DOMAIN = {
+            [SeasonType.SKAHL]: 'https://snokinghockeyleague.com',
+            [SeasonType.POND]: 'http://snokingpondhockey.com',
+        }[this.season.seasonType];
+        return (await get(`${DOMAIN}/api/game/list/${this.season.id}/0/${this.teamId}`)) as SnokingSeasonResponse;
     }
 }
 
@@ -137,11 +138,6 @@ class SnokingGame {
 
         const location1 = this.isHome() ? this.event.rinkName + ' - Home' : this.event.rinkName + ' - Away';
         const location2 = RINK_NAME_TO_ADDRESS[this.event.rinkName] ?? '';
-        const orig = this.event.dateTime;
-        console.log({
-            start,
-            orig,
-        });
 
         return {
             title: `${this.event.teamHomeName} vs ${this.event.teamAwayName}`,
