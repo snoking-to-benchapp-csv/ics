@@ -58,9 +58,29 @@ export class SKHALTeamForMultipleSeasons {
         });
     }
 
-    async getICS(futureOnly = true): Promise<string> {
-        const games = await (futureOnly ? this.getFutureGames() : this.getGames());
-        const { error, value } = createEvents(games.map((g) => g.getICSEventInfo()));
+    async getICS(): Promise<string> {
+        // The goal here is to get the most recent season.
+        // We do that by comparing the latest game in each season.
+        // BenchApp does weird things when games are removed from the ICS, so just going to emit
+        // an ICS with the whole season in it.
+
+        // Eventually, I should change to having folders by season. TBD
+        const gamesBySeason = (
+            await Promise.all(
+                this.teamInSeason.map(async (x) => ({
+                    season: x,
+                    games: (await x.getGames()).sort((a, b) =>
+                        a.event.dateTime.toString().localeCompare(b.event.dateTime.toString()),
+                    ),
+                })),
+            )
+        ).sort((a, b) => b.games[0].event.dateTime.toString().localeCompare(a.games[0].event.dateTime.toString()));
+
+        const { games, season } = gamesBySeason[0];
+        console.log('MOST RECENT SEASON:');
+        console.log({ games, season });
+
+        const { error, value } = createEvents(gamesBySeason[0].games.map((g) => g.getICSEventInfo()));
         if (value !== null && value !== undefined) {
             return value;
         } else {
@@ -76,8 +96,8 @@ export class SKHALTeamForMultipleSeasons {
         return this.getFileDir() + `${this.name}.ics`;
     }
 
-    async writeICS(futureOnly = true): Promise<void> {
-        const ics = await this.getICS(futureOnly);
+    async writeICS(): Promise<void> {
+        const ics = await this.getICS();
         if (!fs.existsSync(this.getFileDir())) {
             fs.mkdirSync(this.getFileDir());
         }
