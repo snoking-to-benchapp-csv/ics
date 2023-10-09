@@ -143,7 +143,7 @@ class SnokingGame {
     }
 
     isHome(): boolean {
-        return this.team.teamId === `${this.event.teamHomeSeasonId}`;
+        return `${this.team.teamId}` === `${this.event.teamHomeSeasonId}`;
     }
 
     getICSEventInfo(): EventAttributes {
