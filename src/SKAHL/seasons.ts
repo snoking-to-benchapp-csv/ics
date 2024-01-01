@@ -62,6 +62,7 @@ async function getallPondSeasons(): Promise<SKAHLSeason[]> {
 
 export async function getCurrentSeasons(): Promise<SKAHLSeason[]> {
     const currentYear = new Date().getFullYear().toString();
+    const nextYear = (new Date().getFullYear() + 1).toString();
     const allSeasons = (await Promise.all([getAllSKAHLSeasons(), getallPondSeasons()])).flat();
-    return allSeasons.filter((s) => s.name.includes(currentYear));
+    return allSeasons.filter((s) => s.name.includes(currentYear) || s.name.includes(nextYear));
 }
