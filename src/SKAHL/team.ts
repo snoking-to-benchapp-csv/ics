@@ -166,6 +166,7 @@ class SnokingGame {
             duration: { hours: 1, minutes: 0 },
             location: `(${location1}) ${location2}`,
             description: this.isHome() ? 'Light Jerseys' : 'Dark Jerseys',
+            uid: `snoking-game-${this.event.id}`,
         };
     }
 }
