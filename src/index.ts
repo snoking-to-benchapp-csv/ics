@@ -20,6 +20,7 @@ async function main(): Promise<void> {
 
     const teamSeasonsByTeam = _.groupBy(teams, (t) => t.name);
     const allTeams: SKHALTeamForMultipleSeasons[] = [];
+    console.log({teamSeasonsByTeam})
     Object.entries(teamSeasonsByTeam).forEach(([teamName, config]) => {
         const team = new SKHALTeamForMultipleSeasons(teamName, config[0].teamId);
         config.forEach((s) => team.addSeason(s));

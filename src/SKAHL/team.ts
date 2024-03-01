@@ -75,10 +75,18 @@ export class SKHALTeamForMultipleSeasons {
                 })),
             )
         ).sort((a, b) => b.games[0].event.dateTime.toString().localeCompare(a.games[0].event.dateTime.toString()));
-
-        const { games, season } = gamesBySeason[0];
-        console.log('MOST RECENT SEASON:');
-        console.log({ games, season });
+        // Always process the most recent season
+        const games: SnokingGame[] = gamesBySeason[0].games;
+        console.log('adding most recent season');
+        console.log(gamesBySeason[0].season.season.name);
+        console.log({games});
+        if(gamesBySeason[0].season.season.name.includes('Playoffs')) {
+            // If the most recent season is playoffs, also process the previous season
+            console.log("PLAYOFFS, ADDING REGULAR SEASON GAMES")
+            console.log(gamesBySeason[1].season.season.name);
+            games.push(...gamesBySeason[1].games);
+            console.log({games})
+        }
 
         const { error, value } = createEvents(gamesBySeason[0].games.map((g) => g.getICSEventInfo()));
         if (value !== null && value !== undefined) {
