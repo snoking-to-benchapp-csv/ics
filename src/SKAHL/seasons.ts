@@ -1,3 +1,4 @@
+import { Dictionary } from 'lodash';
 import { get } from '../interfaces/network';
 import { SKAHLTeamInSeason } from './team';
 
@@ -64,5 +65,19 @@ export async function getCurrentSeasons(): Promise<SKAHLSeason[]> {
     const currentYear = new Date().getFullYear().toString();
     const nextYear = (new Date().getFullYear() + 1).toString();
     const allSeasons = (await Promise.all([getAllSKAHLSeasons(), getallPondSeasons()])).flat();
-    return allSeasons.filter((s) => s.name.includes(currentYear) || s.name.includes(nextYear));
+    return allSeasons
+    .map((s) => {
+            const SEASON_REMAP: Dictionary<string> =  {
+                // So apparently they named the playoffs incorrectly. I guess I'll just include a generalized rename
+                // to handle this if it happens in the future.
+                ['2023-2023 SKAHL Fall-Winter Playoffs']: '2023-2024 SKAHL Fall-Winter Playoffs',
+            };
+
+            if(SEASON_REMAP[s.name]) {
+                s.name = SEASON_REMAP[s.name];
+            }
+
+            return s;
+        })
+        .filter((s) => s.name.includes(currentYear) || s.name.includes(nextYear));
 }
